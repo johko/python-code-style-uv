@@ -1,0 +1,34 @@
+name: "Python Code Style Action"
+description: "This action helps python code to adhere to the celebrate coding standards."
+runs:
+  using: "composite"
+  steps:
+    - name: Check dependencies
+      shell: bash
+      run: flake8 --version && pylint --version && lintly --help || pip install -U -r requirements.txt
+
+    - name: Detect changed files
+      uses: dorny/paths-filter@v2.11.1
+      id: changes
+      with:
+        filters: |
+          addedOrModifiedPython:
+            - added|modified: '**/*.py'
+        list-files: shell
+
+    - name: flake8
+      shell: bash
+      run: |
+        python linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython }}
+
+    - name: mypy
+      uses: tsuyoshicho/action-mypy@v3.11.0
+      with:
+        target: ${{ steps.changes.outputs.addedOrModifiedPython }}
+        reporter: github-pr-review
+        fail_on_error: true
+
+    - name: pylint
+      shell: bash
+      run: |
+        python linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython }}
