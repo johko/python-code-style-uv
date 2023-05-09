@@ -1,10 +1,10 @@
 name: "Python Code Style Action"
 description: "This action helps python code to adhere to the celebrate coding standards."
 inputs:
-  github_token:
-    description: ""
+  fail_on_error:
+    description: "Should the action fail if errors are found? [default: true]"
     required: false
-    default: ${{ github.token }}
+    default: "true"
 runs:
   using: "composite"
   steps:
@@ -36,7 +36,7 @@ runs:
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
       with:
-        target: ${{ steps.changes.outputs.addedOrModifiedPython }}
+        target: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
         reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: pylint
@@ -44,3 +44,4 @@ runs:
       with:
         glob_pattern: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
         reporter: ${{ steps.reporter-check.outputs.reporter }}
+        fail_on_error: ${{ inputs.fail_on_error }}
