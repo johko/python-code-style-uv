@@ -19,7 +19,7 @@ runs:
     - name: flake8
       shell: bash
       run: |
-        python linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython }}
+        python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython_files }}
 
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
@@ -31,4 +31,4 @@ runs:
     - name: pylint
       shell: bash
       run: |
-        python linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython }}
+        python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython_files }}
