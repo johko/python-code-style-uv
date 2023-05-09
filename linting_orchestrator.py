@@ -10,7 +10,7 @@ import subprocess
 
 LINTER_TO_CMD = {
     "flake8": ["flake8", "--extend-exclude=dist,build"],
-    "pylint": ["pylint", "--output-format=json", "--rcfile=.pylintrc"],
+    "pylint": ["pylint", "--output-format=json"],
 }
 LINTER_TO_FORMAT = {"flake8": "flake8", "pylint": "pylint-json"}
 
@@ -28,6 +28,12 @@ LINTLY_CMD = [
 
 
 def main(args: argparse.Namespace) -> None:
+    if os.path.exists(".pylintrc"):
+        LINTER_TO_CMD["pylint"].append("--rcfile=.pylintrc")
+    else:
+        path = os.path.join(os.environ["GITHUB_ACTION_PATH"], ".pylintrc")
+        LINTER_TO_CMD["pylint"].append(f"--rcfile={path}")
+
     if not args.python_files:
         print("No lintable python files. Exiting.")
         sys.exit(0)
