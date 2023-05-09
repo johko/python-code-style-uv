@@ -1,11 +1,16 @@
 name: "Python Code Style Action"
 description: "This action helps python code to adhere to the celebrate coding standards."
+inputs:
+  github_token:
+    description: ""
+    required: false
+    default: ${{ github.token }}
 runs:
   using: "composite"
   steps:
     - name: Check dependencies
       shell: bash
-      run: flake8 --version && pylint --version && lintly --help || pip install -U -r requirements.txt
+      run: flake8 --version && pylint --version && lintly --help > /dev/null || pip install -U -r requirements.txt
 
     - name: Detect changed files
       uses: dorny/paths-filter@v2.11.1
@@ -20,6 +25,8 @@ runs:
       shell: bash
       run: |
         python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
 
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
@@ -32,3 +39,5 @@ runs:
       shell: bash
       run: |
         python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
