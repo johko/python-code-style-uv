@@ -22,13 +22,10 @@ runs:
         list-files: shell
 
     - name: flake8
-      shell: bash
-      run: |
-        python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        PR_NUMBER: ${{ github.event.number }}
-        REPOSITORY_NAME: ${{ github.repository }}
+      uses: reviewdog/action-flake8@v3
+      with:
+        flake8_args: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+        reporter: github-pr-review
 
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
