@@ -27,18 +27,22 @@ LINTLY_CMD = [
 ]
 
 
-def main(args: argparse.Namespace) -> None:
+def linter_cmd_defaults(python_files: list[str]):
     if os.path.exists(".pylintrc"):
         LINTER_TO_CMD["pylint"].append("--rcfile=.pylintrc")
     else:
         path = os.path.join(os.environ["GITHUB_ACTION_PATH"], ".pylintrc")
         LINTER_TO_CMD["pylint"].append(f"--rcfile={path}")
 
-    if not args.python_files:
+    if not python_files:
         print("No lintable python files. Exiting.")
         sys.exit(0)
     else:
-        LINTER_TO_CMD[args.linter].extend(args.python_files)
+        LINTER_TO_CMD[args.linter].extend(python_files)
+
+
+def main(args: argparse.Namespace) -> None:
+    linter_cmd_defaults(args.python_files)
 
     linting_process = subprocess.run(
         LINTER_TO_CMD[args.linter], capture_output=True, check=False
