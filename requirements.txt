@@ -1,3 +1,0 @@
-lintly==0.6.0
-flake8=="*"
-pylint=="*"
