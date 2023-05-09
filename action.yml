@@ -27,6 +27,8 @@ runs:
         python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} flake8 ${{ steps.changes.outputs.addedOrModifiedPython_files }}
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
+        PR_NUMBER: ${{ github.event.number }}
+        REPOSITORY_NAME: ${{ github.repository }}
 
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
@@ -41,3 +43,5 @@ runs:
         python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython_files }}
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
+        PR_NUMBER: ${{ github.event.number }}
+        REPOSITORY_NAME: ${{ github.repository }}

@@ -18,12 +18,17 @@ LINTLY_CMD = [
     "lintly",
     "--api-key",
     os.environ["GITHUB_TOKEN"],
+    "--pr",
+    os.environ["PR_NUMBER"],
+    "--repo",
+    os.environ["REPOSITORY_NAME"],
+    "--commit-sha",
+    os.environ["GITHUB_SHA"],
     "--fail-on",
     "any",
     "--post-status",
     "--request-changes",
     "--use-checks",
-    "--no-exit-zero",
 ]
 
 
