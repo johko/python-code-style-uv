@@ -8,9 +8,15 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Check dependencies
+    - name: Check reporter type
+      id: reporter-check
       shell: bash
-      run: flake8 --version && pylint --version && lintly --help > /dev/null || pip install -U -r requirements.txt
+      run: |
+        if [ ${{ github.event_name }} = "pull_request" ]; then
+            echo "::set-output name=reporter::github-pr-review"
+        else
+            echo "::set-output name=reporter::github-check"
+        fi
 
     - name: Detect changed files
       uses: dorny/paths-filter@v2.11.1
@@ -25,20 +31,16 @@ runs:
       uses: reviewdog/action-flake8@v3
       with:
         flake8_args: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-        reporter: github-pr-review
+        reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
       with:
         target: ${{ steps.changes.outputs.addedOrModifiedPython }}
-        reporter: github-pr-review
-        fail_on_error: true
+        reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: pylint
-      shell: bash
-      run: |
-        python $GITHUB_ACTION_PATH/linting_orchestrator.py ${{ github.event_name == 'pull_request' }} pylint ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        PR_NUMBER: ${{ github.event.number }}
-        REPOSITORY_NAME: ${{ github.repository }}
+      uses: dciborow/action-pylint@0.1.0
+      with:
+        glob_pattern: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+        reporter: ${{ steps.reporter-check.outputs.reporter }}
