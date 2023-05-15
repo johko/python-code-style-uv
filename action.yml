@@ -13,9 +13,9 @@ runs:
       shell: bash
       run: |
         if [ ${{ github.event_name }} = "pull_request" ]; then
-            echo "::set-output name=reporter::github-pr-review"
+            echo "reporter=github-pr-review" >> $GITHUB_OUTPUT
         else
-            echo "::set-output name=reporter::github-check"
+            echo "reporter=github-check" >> $GITHUB_OUTPUT
         fi
 
     - name: Detect changed files
