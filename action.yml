@@ -36,7 +36,8 @@ runs:
     - name: mypy
       uses: tsuyoshicho/action-mypy@v3.11.0
       with:
-        target: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+        target: ""
+        mypy_flags: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
         reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: pylint
