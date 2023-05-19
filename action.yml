@@ -28,12 +28,14 @@ runs:
         list-files: shell
 
     - name: flake8
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       uses: reviewdog/action-flake8@v3
       with:
         flake8_args: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
         reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: mypy
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       uses: tsuyoshicho/action-mypy@v3.11.0
       with:
         target: ""
@@ -41,6 +43,7 @@ runs:
         reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: pylint
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       uses: dciborow/action-pylint@0.1.0
       with:
         glob_pattern: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
