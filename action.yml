@@ -5,6 +5,10 @@ inputs:
     description: "Should the action fail if errors are found? [default: true]"
     required: false
     default: "true"
+  mypy_target:
+    description: "Source directory for mypy linting"
+    required: false
+    default: "src"
 runs:
   using: "composite"
   steps:
@@ -38,8 +42,7 @@ runs:
       if: steps.changes.outputs.addedOrModifiedPython == 'true'
       uses: tsuyoshicho/action-mypy@v3.11.0
       with:
-        target: ""
-        mypy_flags: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
+        target: ${{ inputs.mypy_target }}
         reporter: ${{ steps.reporter-check.outputs.reporter }}
 
     - name: pylint
