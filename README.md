@@ -18,7 +18,7 @@ MAKE SURE TO PROVIDE YOUR OWN LINTER CONFIGURATION FILES IN YOUR REPOSITORY.
 
 ```yaml
 name: celebrate python linting
-uses: kartenmacherei/python-code-style@0.2.0
+uses: kartenmacherei/python-code-style@0.3.0
 ```
 
 ## Features
