@@ -1,10 +1,15 @@
-name: "Python Code Style Action"
-description: "This action helps python code to adhere to the celebrate coding standards."
+name: "Python Code Style Action (uv-based, dependencies pre-installed)"
+description: "Runs flake8, mypy, pylint via 'uv run' on the project if Python files changed, using pre-installed versions."
+
 inputs:
   fail_on_error:
     description: "Should the action fail if errors are found? [default: true]"
     required: false
     default: "true"
+  working_directory:
+    description: "Directory where the code to lint resides and linters should be run."
+    required: false
+    default: "."
 runs:
   using: "composite"
   steps:
@@ -19,7 +24,7 @@ runs:
         fi
 
     - name: Detect changed files
-      uses: dorny/paths-filter@v2.11.1
+      uses: dorny/paths-filter@v3
       id: changes
       with:
         filters: |
@@ -27,24 +32,27 @@ runs:
             - added|modified: '**/*.py'
         list-files: shell
 
-    - name: flake8
-      if: steps.changes.outputs.addedOrModifiedPython == 'true'
-      uses: reviewdog/action-flake8@v3
-      with:
-        flake8_args: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-        reporter: ${{ steps.reporter-check.outputs.reporter }}
+    - name: Run flake8 via uv run
+      if: steps.changes.outputs.pythonChanged == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        echo "Running flake8 via uv run in $(pwd)"
+        # Use 'uv run' to execute flake8 within the uv-managed environment
+        uv run flake8 . || [[ "${{ inputs.fail_on_error }}" == "false" ]]
 
-    - name: mypy
-      if: steps.changes.outputs.addedOrModifiedPython == 'true'
-      uses: tsuyoshicho/action-mypy@v3.13.0
-      with:
-        target: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-        reporter: ${{ steps.reporter-check.outputs.reporter }}
+    - name: Run mypy via uv run
+      if: steps.changes.outputs.pythonChanged == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        echo "Running mypy via uv run in $(pwd)"
+        uv run mypy . || [[ "${{ inputs.fail_on_error }}" == "false" ]]
 
-    - name: pylint
-      if: steps.changes.outputs.addedOrModifiedPython == 'true'
-      uses: dciborow/action-pylint@0.1.0
-      with:
-        glob_pattern: ${{ steps.changes.outputs.addedOrModifiedPython_files }}
-        reporter: ${{ steps.reporter-check.outputs.reporter }}
-        fail_on_error: ${{ inputs.fail_on_error }}
+    - name: Run pylint via uv run
+      if: steps.changes.outputs.pythonChanged == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        echo "Running pylint via uv run in $(pwd)"
+        uv run pylint . || [[ "${{ inputs.fail_on_error }}" == "false" ]]
