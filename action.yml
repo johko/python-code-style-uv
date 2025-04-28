@@ -33,7 +33,7 @@ runs:
         list-files: shell
 
     - name: Run flake8 via uv run
-      if: steps.changes.outputs.pythonChanged == 'true'
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
@@ -41,7 +41,7 @@ runs:
         uv run flake8 . || [[ "${{ inputs.fail_on_error }}" == "false" ]]
 
     - name: Run mypy via uv run
-      if: steps.changes.outputs.pythonChanged == 'true'
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
@@ -49,7 +49,7 @@ runs:
         uv run mypy . || [[ "${{ inputs.fail_on_error }}" == "false" ]]
 
     - name: Run pylint via uv run
-      if: steps.changes.outputs.pythonChanged == 'true'
+      if: steps.changes.outputs.addedOrModifiedPython == 'true'
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
